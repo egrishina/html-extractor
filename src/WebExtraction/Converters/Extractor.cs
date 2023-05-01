@@ -55,9 +55,6 @@ namespace WebExtraction.Converters
             };
 
             var jsonString = JsonSerializer.Serialize(hotel, options);
-
-            Console.WriteLine(jsonString);
-
             return jsonString;
         }
 

@@ -1,4 +1,5 @@
-﻿using WebExtraction.Converters;
+﻿using System.Text;
+using WebExtraction.Converters;
 
 namespace WebExtraction
 {
@@ -6,20 +7,35 @@ namespace WebExtraction
     {
         private static async Task Main(string[] args)
         {
-            var path = Path.GetFullPath(
+            var inputPath = Path.GetFullPath(
                 Path.Combine(
                     AppDomain.CurrentDomain.BaseDirectory,
-                    @"..\..\..\",
-                    @"Resources\task 1 - Kempinski Hotel Bristol Berlin, Germany - Booking.com.html"));
+                    @"..\..\..\Resources\task 1 - Kempinski Hotel Bristol Berlin, Germany - Booking.com.html"));
 
-            if (!File.Exists(path))
+            if (!File.Exists(inputPath))
             {
-                throw new FileNotFoundException(path);
+                throw new FileNotFoundException(inputPath);
             }
 
-            var html = File.ReadAllText(path);
+            var html = File.ReadAllText(inputPath);
             var extractor = new Extractor();
-            var _ = await extractor.ExtractHotelInfo(html);
+            var json = await extractor.ExtractHotelInfo(html);
+
+            var fileName = "HotelInfo.json";
+            var outputPath = Path.GetFullPath(
+                Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    @"..\..\..\Resources\",
+                    fileName));
+
+            if (File.Exists(outputPath))
+            {
+                File.Delete(outputPath);
+            }
+
+            using FileStream fs = File.Create(outputPath);
+            var text = new UTF8Encoding(true).GetBytes(json);
+            fs.Write(text, 0, text.Length);
         }
     }
 }
